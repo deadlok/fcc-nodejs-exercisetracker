@@ -175,9 +175,9 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     //console.log(exercises)
 
     res.json({
-      _id: user._id,
       username: user.username,
       count: count,
+      _id: user._id,
       log: exercises
     })
   } catch (err) {
