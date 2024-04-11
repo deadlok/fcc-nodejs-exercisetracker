@@ -81,7 +81,7 @@ app.post('/api/users/:_id/exercises', async (req, res)=>{
     const p_description = req.body.description
     const p_duration = req.body.duration
     const p_date = req.body.date
-    let description, duration, date = new Date(Date.now().toLocaleString())
+    let description, duration, date = Date.now()
 
 
     if (p_description && p_duration){
@@ -93,7 +93,7 @@ app.post('/api/users/:_id/exercises', async (req, res)=>{
           console.log("Not a valid date format")
          return -1
         } else {
-          date = new Date(date.toLocaleDateString)
+          date = new Date(date.toLocaleDateString())
         }
       }
 
