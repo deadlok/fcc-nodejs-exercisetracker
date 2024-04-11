@@ -92,8 +92,6 @@ app.post('/api/users/:_id/exercises', async (req, res)=>{
         if (date == NaN){
           console.log("Not a valid date format")
          return -1
-        } else {
-          date = new Date(date.toLocaleDateString())
         }
       }
 
