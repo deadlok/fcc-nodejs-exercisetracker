@@ -144,14 +144,13 @@ app.post('/api/users/:_id/exercises', async function (req, res){
 
     doc = await exercise.save()
 
-    let rtn = { ...user }
-    rtn.description = description
-    rtn.duration = duration
-    rtn.date = date
-    console.log(rtn)
-
-    res.json(rtn)
-
+    return res.json({
+      _id:user._id,
+      username:user.username,
+      date: doc.date.toDateString(),
+      duration: doc.duration,
+      description:doc.description
+    })
   } catch (err) {
     console.log(err)
     return -1

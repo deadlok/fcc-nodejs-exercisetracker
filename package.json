@@ -11,6 +11,7 @@
 		"dotenv": "^8.2.0",
 		"express": "^4.16.4",
 		"mongoose": "^8.3.1",
+		"node": "^18.20.1",
 		"vercel": "^33.7.0"
 	},
 	"repository": {
