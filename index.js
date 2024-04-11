@@ -35,35 +35,8 @@ const exerciseSchema = new mongoose.Schema({
   }
 })
 
-const logItemSchema = new mongoose.Schema({
-  description: {
-    type: String,
-    required: true
-  },
-  duration: {
-    type: Number,
-    required: true
-  },
-  date: {
-    type: Date,
-    required: true
-  }
-})
-
-const logSchema = new mongoose.Schema({
-  user: {
-    type: String,
-    required: true
-  },
-  count: Number,
-  log: [logItemSchema]
-  
-})
-
 let User = mongoose.model('User', userSchema)
 let Exercise = mongoose.model('Exercise', exerciseSchema)
-let Log = mongoose.model('Log', logSchema)
-
 ///////////////////////////////
 
 app.use(cors())
@@ -108,7 +81,7 @@ app.post('/api/users/:_id/exercises', async (req, res)=>{
     const p_description = req.body.description
     const p_duration = req.body.duration
     const p_date = req.body.date
-    let description, duration, date = Date.now()
+    let description, duration, date = new Date(Date.now().toLocaleString())
 
 
     if (p_description && p_duration){
@@ -119,14 +92,17 @@ app.post('/api/users/:_id/exercises', async (req, res)=>{
         if (date == NaN){
           console.log("Not a valid date format")
          return -1
+        } else {
+          date = new Date(date.toLocaleDateString)
         }
       }
 
       // validate duration
-      if (p_duration <= 0){
-        console.log("Exercise duration must greater than zero") 
+      if (p_duration != NaN && p_duration > 0) duration = p_duration
+      else {
+        console.log("Duration must greater than zero") 
         return -1
-      } else duration = p_duration
+      }
 
       //validate description
       description = p_description
@@ -138,8 +114,8 @@ app.post('/api/users/:_id/exercises', async (req, res)=>{
     const exercise = new Exercise({
       username: user.username,
       description: description,
-      duration, duration,
-      date, date
+      duration: duration,
+      date: date
     })
 
     doc = await exercise.save()
@@ -160,8 +136,37 @@ app.post('/api/users/:_id/exercises', async (req, res)=>{
 app.get('/api/users/:_id/logs', async (req, res) => {
   const userid = req.params._id
   try {
+
+    let p_from = req.query.from
+    let p_to = req.query.to
+    let p_limit = req.query.limit
+    console.log(p_from)
+    console.log(p_to)
+    if (p_from && Date.parse(p_from) != NaN){
+      p_from = new Date(p_from).toDateString()
+    } else p_from = new Date('1900-01-01').toDateString()
+
+    if (p_to && Date.parse(p_to) != NaN){
+      p_to = new Date(p_to).toDateString()
+    } else p_to = new Date('2999-12-31').toDateString()
+
+    if (p_limit && p_limit != NaN && p_limit > 0){
+      p_limit = parseInt(p_limit)
+    } else p_limit = 0
+
+    console.log(p_from, p_to)
+
     const user = await User.findById(userid)
-    let data = await Exercise.find({username: user.username}).select('description duration date')
+
+    let data = await Exercise.find(
+      { $and:[
+          {username: user.username},
+          {date: {$gte: p_from, $lte: p_to}}
+        ]
+      })
+      .limit(p_limit)
+      .select('description duration date')
+
     let count = data.length
     let exercises = []
     data.map((item)=>{
