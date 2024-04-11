@@ -100,7 +100,7 @@ app.get('/api/users', async function(req, res) {
   }
 })
 
-app.post('/api/users/:_id/exercises', async function (req, res){
+app.post('/api/users/:_id/exercises', async (req, res)=>{
   //console.log('exercise post')
   const userid = req.params._id
   try {
@@ -157,4 +157,31 @@ app.post('/api/users/:_id/exercises', async function (req, res){
   }
 })
 
+app.get('/api/users/:_id/logs', async (req, res) => {
+  const userid = req.params._id
+  try {
+    const user = await User.findById(userid)
+    let data = await Exercise.find({username: user.username}).select('description duration date')
+    let count = data.length
+    let exercises = []
+    data.map((item)=>{
+      exercises.push({
+        descripton: item.description,
+        duration: item.duration,
+        date: item.date.toDateString()
+      })
+    })
 
+    //console.log(exercises)
+
+    res.json({
+      username: user.username,
+      count: count,
+      _id: user._id,
+      log: exercises
+    })
+  } catch (err) {
+    console.log(err)
+    return -1
+  }
+})
