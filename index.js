@@ -166,7 +166,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     let exercises = []
     data.map((item)=>{
       exercises.push({
-        descripton: item.description,
+        descriptIon: item.description,
         duration: item.duration,
         date: item.date.toDateString()
       })
